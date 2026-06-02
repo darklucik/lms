@@ -113,7 +113,7 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder=""Введение в курс...""
+                      placeholder="например 'Введение в курс...'"
                       {...field}
                     />
                   </FormControl>
@@ -122,7 +122,7 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
               )}
             />
             <Button disabled={!isValid || isSubmitting} type="submit">
-              Create
+              Создать
             </Button>
           </form>
         </Form>

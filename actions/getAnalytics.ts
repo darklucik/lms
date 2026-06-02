@@ -1,33 +1,34 @@
 import { db } from "@/lib/db";
-import { Course, Purchase } from "@prisma/client";
-
-type PurchaseWithCourse = Purchase & { course: Course };
-
-const groupByCourse = (purchases: PurchaseWithCourse[]) => {
-  const grouped: { [courseTitle: string]: number } = {};
-  purchases.forEach((purchase) => {
-    const courseTitle = purchase.course.title;
-    if (!grouped[courseTitle]) grouped[courseTitle] = 0;
-    grouped[courseTitle] += purchase.course.price!;
-  });
-  return grouped;
-};
 
 export const getAnalytics = async (userId: string) => {
   try {
-    const purchases = await db.purchase.findMany({
-      where: { course: { userId } },
-      include: { course: true },
+    const courses = await db.course.findMany({
+      where: { userId },
+      include: {
+        chapters: { where: { isPublished: true } },
+        _count: { select: { chapters: { where: { isPublished: true } } } },
+      },
     });
-    const groupedEarnings = groupByCourse(purchases);
-    const data = Object.entries(groupedEarnings).map(([name, total]) => ({ name, total }));
-    return {
-      data,
-      totalRevenue: data.reduce((acc, curr) => acc + curr.total, 0),
-      totalSales: purchases.length,
-    };
-  } catch (error) {
-    console.log("[GET_ANALYTICS]", error);
-    return { data: [], totalRevenue: 0, totalSales: 0 };
+
+    const totalCourses = courses.length;
+    const publishedCourses = courses.filter(c => c.isPublished).length;
+
+    // Подсчёт студентов по прогрессу
+    const courseIds = courses.map(c => c.id);
+    const progressEntries = await db.userProgress.findMany({
+      where: { chapter: { courseId: { in: courseIds } } },
+      select: { userId: true, chapter: { select: { courseId: true } } },
+      distinct: ["userId"],
+    });
+
+    const uniqueStudents = new Set(progressEntries.map(p => p.userId)).size;
+
+    const data = courses
+      .filter(c => c.isPublished)
+      .map(c => ({ name: c.title, total: c._count.chapters }));
+
+    return { data, totalCourses, publishedCourses, totalStudents: uniqueStudents };
+  } catch {
+    return { data: [], totalCourses: 0, publishedCourses: 0, totalStudents: 0 };
   }
 };

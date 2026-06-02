@@ -1,5 +1,4 @@
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs";
+import { getAuthUserId } from "@/lib/auth";
 import { Chapter, Course, UserProgress } from "@prisma/client";
 import { redirect } from "next/navigation";
 import CourseSidebarItem from "./course-sidebar-item";
@@ -14,13 +13,6 @@ interface CourseSidebarProps {
 }
 
 const CourseSidebar = async ({ course, progressCount }: CourseSidebarProps) => {
-  const { userId } = auth();
-  if (!userId) return redirect("/");
-
-  const purchase = await db.purchase.findUnique({
-    where: { userId_courseId: { userId, courseId: course.id } },
-  });
-
   const completedCount = course.chapters.filter(
     (ch) => ch.userProgress?.[0]?.isCompleted
   ).length;
@@ -34,17 +26,15 @@ const CourseSidebar = async ({ course, progressCount }: CourseSidebarProps) => {
           </div>
           <h1 className="font-semibold text-sm leading-tight">{course.title}</h1>
         </div>
-        {purchase && (
-          <div className="pt-1">
-            <CourseProgress
-              variant={progressCount === 100 ? "success" : "default"}
-              value={progressCount}
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              {completedCount} of {course.chapters.length} lessons done
-            </p>
-          </div>
-        )}
+        <div className="pt-1">
+          <CourseProgress
+            variant={progressCount === 100 ? "success" : "default"}
+            value={progressCount}
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            {completedCount} из {course.chapters.length} уроков пройдено
+          </p>
+        </div>
       </div>
       <div className="flex flex-col w-full py-2">
         {course.chapters.map((chapter) => (
@@ -54,7 +44,7 @@ const CourseSidebar = async ({ course, progressCount }: CourseSidebarProps) => {
             label={chapter.title}
             isCompleted={!!chapter.userProgress?.[0]?.isCompleted}
             courseId={course.id}
-            isLocked={!chapter.isFree && !purchase}
+            isLocked={false}
           />
         ))}
       </div>

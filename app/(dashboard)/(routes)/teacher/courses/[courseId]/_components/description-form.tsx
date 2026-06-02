@@ -100,7 +100,7 @@ export const DescriptionForm = ({
                   <FormControl>
                     <Textarea
                       disabled={isSubmitting}
-                      placeholder=""Этот курс о...""
+                      placeholder="например 'Этот курс о...'"
                       {...field}
                     />
                   </FormControl>

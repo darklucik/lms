@@ -6,12 +6,20 @@ import { Button } from "./ui/button";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
 import SearchInput from "./search-input";
-import { isTeacher } from "@/lib/teacher";
+import { useEffect, useState } from "react";
 
 const NavbarRoutes = () => {
   const { userId } = useAuth();
-
   const pathname = usePathname();
+  const [isTeacherUser, setIsTeacherUser] = useState(false);
+
+  useEffect(() => {
+    if (userId) {
+      fetch("/api/me/is-teacher")
+        .then((r) => r.json())
+        .then((data) => setIsTeacherUser(data.isTeacher));
+    }
+  }, [userId]);
 
   const isTeacherPage = pathname?.startsWith("/teacher");
   const isCoursePage = pathname?.includes("/courses");
@@ -32,7 +40,7 @@ const NavbarRoutes = () => {
               Выйти из курса
             </Button>
           </Link>
-        ) : isTeacher(userId!) ? (
+        ) : isTeacherUser ? (
           <Link href="/teacher/courses">
             <Button size="sm" variant="ghost">
               Режим преподавателя

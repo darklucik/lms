@@ -5,9 +5,8 @@ import { getChapter } from "@/actions/get-chapter";
 import Banner from "@/components/banner";
 import { Preview } from "@/components/preview";
 import { VideoPlayer } from "./_components/video-player";
-import { CourseEnrollButton } from "./_components/course-enroll-button";
-import { Separator } from "@/components/ui/separator";
 import { CourseProgressButton } from "./_components/course-progress-button";
+import { Separator } from "@/components/ui/separator";
 
 const ChapterIdPage = async ({
   params,
@@ -17,21 +16,15 @@ const ChapterIdPage = async ({
   const { userId } = auth();
   if (!userId) return redirect("/");
 
-  const { chapter, course, attachments, nextChapter, userProgress, purchase } =
+  const { chapter, course, attachments, nextChapter, userProgress } =
     await getChapter({ userId, chapterId: params.chapterId, courseId: params.courseId });
 
   if (!chapter || !course) return redirect("/");
-
-  const isLocked = !chapter.isFree && !purchase;
-  const completeOnEnd = !!purchase && !userProgress?.isCompleted;
 
   return (
     <div>
       {userProgress?.isCompleted && (
         <Banner variant="success" label="Вы уже прошли эту главу. Отличная работа!" />
-      )}
-      {isLocked && (
-        <Banner variant="warning" label="Для просмотра этой главы необходимо приобрести курс." />
       )}
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
         <div className="p-4">
@@ -41,8 +34,8 @@ const ChapterIdPage = async ({
             courseId={params.courseId}
             nextChapterId={nextChapter?.id}
             videoUrl={chapter.videoUrl || ""}
-            isLocked={isLocked}
-            completeOnEnd={completeOnEnd}
+            isLocked={false}
+            completeOnEnd={!userProgress?.isCompleted}
           />
         </div>
         <div className="px-4 pb-4">
@@ -53,16 +46,12 @@ const ChapterIdPage = async ({
                 <p className="text-sm text-muted-foreground mt-0.5">{course.title}</p>
               )}
             </div>
-            {purchase ? (
-              <CourseProgressButton
-                chapterId={params.chapterId}
-                courseId={params.courseId}
-                nextChapterId={nextChapter?.id}
-                isCompleted={!!userProgress?.isCompleted}
-              />
-            ) : (
-              <CourseEnrollButton courseId={params.courseId} price={course.price!} />
-            )}
+            <CourseProgressButton
+              chapterId={params.chapterId}
+              courseId={params.courseId}
+              nextChapterId={nextChapter?.id}
+              isCompleted={!!userProgress?.isCompleted}
+            />
           </div>
           <Separator />
           {chapter.description && (

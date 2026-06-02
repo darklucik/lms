@@ -86,7 +86,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="например "Продвинутая веб-разработка""
+                      placeholder="например 'Продвинутая веб-разработка'"
                       {...field}
                     />
                   </FormControl>
