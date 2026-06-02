@@ -8,13 +8,14 @@ const AnalyticsPage = async () => {
   const { userId } = auth();
   if (!userId) return redirect("/");
 
-  const { data, totalRevenue, totalSales } = await getAnalytics(userId);
+  const { data, totalCourses, publishedCourses, totalStudents } = await getAnalytics(userId);
 
   return (
     <div className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <DataCard label="Общий доход" value={totalRevenue} shouldFormat />
-        <DataCard label="Всего продаж" value={totalSales} />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <DataCard label="Всего курсов" value={totalCourses} />
+        <DataCard label="Опубликовано" value={publishedCourses} />
+        <DataCard label="Студентов" value={totalStudents} />
       </div>
       <Chart data={data} />
     </div>
