@@ -14,6 +14,7 @@ model Course {
   title       String
   description String?
   imageUrl    String?
+  price       Float?
   isPublished Boolean @default(false)
 
   categoryId String?
