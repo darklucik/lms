@@ -1,7 +1,11 @@
 "use client";
 
-import NavbarRoutes from "@/components/navbar-routes";
+import dynamic from "next/dynamic";
 import { MobileSidebar } from "./mobile-sidebar";
+
+const NavbarRoutes = dynamic(() => import("@/components/navbar-routes"), {
+  ssr: false,
+});
 
 export const Navbar = () => {
   return (
