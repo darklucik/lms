@@ -1,18 +1,16 @@
 import { getDashboardCourses } from "@/actions/get-dashboard-courses";
 import CoursesList from "@/components/courses-list";
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { CheckCircle2, Clock, BookOpen, TrendingUp } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Navbar } from "./(dashboard)/_components/navbar";
 import Sidebar from "./(dashboard)/_components/sidebar";
 import InfoCard from "./(dashboard)/_components/info-card";
+import { Greeting } from "./(dashboard)/_components/greeting";
 
 export default async function Dashboard() {
   const { userId } = auth();
   if (!userId) return redirect("/sign-in");
-
-  const user = await currentUser();
-  const firstName = user?.firstName || "";
 
   const { completedCourses, coursesInProgress } = await getDashboardCourses(userId);
   const totalCourses = completedCourses.length + coursesInProgress.length;
@@ -27,16 +25,7 @@ export default async function Dashboard() {
       </div>
       <main className="md:pl-56 pt-[80px] h-full">
         <div className="p-6 max-w-7xl mx-auto space-y-8">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight">
-              С возвращением{firstName ? `, ${firstName}` : ""} 👋
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              {totalCourses > 0
-                ? `Вы записаны на ${totalCourses} ${totalCourses === 1 ? "курс" : totalCourses < 5 ? "курса" : "курсов"}. Продолжайте!`
-                : "Просмотрите каталог и начните свой первый курс."}
-            </p>
-          </div>
+          <Greeting totalCourses={totalCourses} />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <InfoCard icon={TrendingUp} label="Всего курсов" numberOfItems={totalCourses} />
             <InfoCard icon={Clock} label="В процессе" numberOfItems={coursesInProgress.length} variant="default" />
