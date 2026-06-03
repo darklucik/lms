@@ -2,7 +2,13 @@
 const nextConfig = {
   swcMinify: false,
   images: {
-    domains: ["utfs.io", "public.blob.vercel-storage.com"],
+    domains: ["utfs.io"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+    ],
   },
   experimental: {
     serverComponentsExternalPackages: ["@vercel/blob"],
