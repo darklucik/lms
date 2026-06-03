@@ -14,8 +14,10 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const { userId } = auth();
   if (!userId) return redirect("/");
 
-  const categories = await db.category.findMany({ orderBy: { name: "asc" } });
-  const courses = await getCourses({ userId, ...searchParams });
+  const [categories, courses] = await Promise.all([
+    db.category.findMany({ orderBy: { name: "asc" } }).catch(() => []),
+    getCourses({ userId, ...searchParams }),
+  ]);
 
   return (
     <>
