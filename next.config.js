@@ -2,7 +2,10 @@
 const nextConfig = {
   swcMinify: false,
   images: {
-    domains: ["utfs.io"],
+    domains: ["utfs.io", "public.blob.vercel-storage.com"],
+  },
+  experimental: {
+    serverComponentsExternalPackages: ["@vercel/blob"],
   },
 };
 
