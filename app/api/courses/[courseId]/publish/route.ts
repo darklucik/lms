@@ -17,8 +17,7 @@ export async function PATCH(
     });
     if (!course) return new NextResponse("Not found", { status: 404 });
 
-    const hasPublishedChapters = course.chapters.some((c) => c.isPublished);
-    if (!course.title || !course.description || !course.imageUrl || !course.categoryId || !hasPublishedChapters) {
+    if (!course.title || !course.description || !course.imageUrl || !course.categoryId) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 

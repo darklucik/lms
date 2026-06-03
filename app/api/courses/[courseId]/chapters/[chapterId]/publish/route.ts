@@ -18,7 +18,7 @@ export async function PATCH(
     const chapter = await db.chapter.findUnique({
       where: { id: params.chapterId, courseId: params.courseId },
     });
-    if (!chapter || !chapter.title || !chapter.description || !chapter.videoUrl) {
+    if (!chapter || !chapter.title || !chapter.description) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
