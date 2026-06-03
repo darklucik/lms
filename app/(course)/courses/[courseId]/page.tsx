@@ -8,7 +8,6 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     },
     include: {
       chapters: {
-        where: { isPublished: true },
         orderBy: {
           createdAt: "asc",
         },
