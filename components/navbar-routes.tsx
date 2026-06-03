@@ -11,13 +11,15 @@ import { useEffect, useState } from "react";
 const NavbarRoutes = () => {
   const { userId } = useAuth();
   const pathname = usePathname();
-  const [isTeacherUser, setIsTeacherUser] = useState(false);
+  const [isTeacherUser, setIsTeacherUser] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (userId) {
       fetch("/api/me/is-teacher")
         .then((r) => r.json())
         .then((data) => setIsTeacherUser(data.isTeacher));
+    } else {
+      setIsTeacherUser(false);
     }
   }, [userId]);
 
@@ -40,7 +42,7 @@ const NavbarRoutes = () => {
               Выйти из курса
             </Button>
           </Link>
-        ) : isTeacherUser ? (
+        ) : isTeacherUser === true ? (
           <Link href="/teacher/courses">
             <Button size="sm" variant="ghost">
               Режим преподавателя
