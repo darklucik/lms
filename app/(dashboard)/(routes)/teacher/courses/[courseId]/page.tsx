@@ -32,7 +32,6 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     course.description,
     course.imageUrl,
     course.categoryId,
-    course.chapters.some((c) => c.isPublished),
   ];
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
