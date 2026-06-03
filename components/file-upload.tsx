@@ -1,8 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,12 +11,6 @@ const ACCEPTED: Record<FileUploadEndpoint, string> = {
   courseImage: "image/*",
   courseAttachment: "text/*,image/*,video/*,audio/*,application/pdf",
   chapterVideo: "video/*",
-};
-
-const MAX_SIZE: Record<FileUploadEndpoint, number> = {
-  courseImage: 4 * 1024 * 1024,
-  courseAttachment: 2 * 1024 * 1024 * 1024,
-  chapterVideo: 10 * 1024 * 1024 * 1024,
 };
 
 const LABELS: Record<FileUploadEndpoint, string> = {
@@ -37,33 +29,41 @@ export const FileUpload = ({ onChange, endpoint }: FileUploadProps) => {
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (file: File) => {
-    if (file.size > MAX_SIZE[endpoint]) {
-      toast.error("Файл слишком большой");
-      return;
-    }
-
+  const handleFile = async (file: File) => {
     setUploading(true);
     setProgress(0);
 
-    const storageRef = ref(storage, `${endpoint}/${Date.now()}-${file.name}`);
-    const task = uploadBytesResumable(storageRef, file);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    task.on(
-      "state_changed",
-      (snap) => {
-        setProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
-      },
-      (error) => {
-        toast.error(error.message);
-        setUploading(false);
-      },
-      async () => {
-        const url = await getDownloadURL(task.snapshot.ref);
-        onChange(url);
-        setUploading(false);
-      }
-    );
+      const xhr = new XMLHttpRequest();
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          setProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      };
+
+      const url = await new Promise<string>((resolve, reject) => {
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            resolve(data.url);
+          } else {
+            reject(new Error("Upload failed"));
+          }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.open("POST", "/api/upload");
+        xhr.send(formData);
+      });
+
+      onChange(url);
+    } catch (error: any) {
+      toast.error(error?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
