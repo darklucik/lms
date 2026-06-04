@@ -11,10 +11,12 @@ import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import Banner from "@/components/banner";
 import { Actions } from "./_components/actions";
+import { getT } from "@/lib/get-lang";
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
   if (!userId) return redirect("/");
+  const t = getT();
 
   const course = await db.course.findUnique({
     where: { id: params.courseId, userId },
@@ -27,12 +29,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
 
   if (!course) return redirect("/");
 
-  const requiredFields = [
-    course.title,
-    course.description,
-    course.imageUrl,
-    course.categoryId,
-  ];
+  const requiredFields = [course.title, course.description, course.imageUrl, course.categoryId];
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
   const completionText = `(${completedFields}/${totalFields})`;
@@ -40,14 +37,12 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
 
   return (
     <>
-      {!course.isPublished && (
-        <Banner label="Этот курс не опубликован. Студенты его не видят" />
-      )}
+      {!course.isPublished && <Banner label={t.course.notPublished} />}
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
-            <h1 className="text-2xl font-medium">Настройка курса</h1>
-            <span className="text-sm text-slate-700">Заполните все поля {completionText}</span>
+            <h1 className="text-2xl font-medium">{t.course.setup}</h1>
+            <span className="text-sm text-slate-700">{t.common.fillAll} {completionText}</span>
           </div>
           <Actions disabled={!isComplete} courseId={params.courseId} isPublished={course.isPublished} />
         </div>
@@ -55,7 +50,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">Настройте курс</h2>
+              <h2 className="text-xl">{t.course.customizeSetup}</h2>
             </div>
             <TitleForm initialData={course} courseId={course.id} />
             <DescriptionForm initialData={course} courseId={course.id} />
@@ -70,14 +65,14 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Главы курса</h2>
+                <h2 className="text-xl">{t.course.chapters}</h2>
               </div>
               <ChaptersForm initialData={course} courseId={course.id} />
             </div>
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={File} />
-                <h2 className="text-xl">Материалы и вложения</h2>
+                <h2 className="text-xl">{t.course.attachments}</h2>
               </div>
               <AttachmentForm initialData={course} courseId={course.id} />
             </div>

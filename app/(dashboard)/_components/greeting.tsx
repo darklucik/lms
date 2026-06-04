@@ -1,20 +1,19 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useLanguage } from "@/hooks/use-language";
 
-export const Greeting = ({ totalCourses }: { totalCourses: number }) => {
-  const { user } = useUser();
-  const firstName = user?.firstName || "";
+export const Greeting = ({ totalCourses, firstName }: { totalCourses: number; firstName?: string }) => {
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-1">
       <h1 className="text-2xl font-bold tracking-tight">
-        С возвращением{firstName ? `, ${firstName}` : ""} 👋
+        {t.dashboard.welcome}{firstName ? `, ${firstName}` : ""} 👋
       </h1>
       <p className="text-muted-foreground text-sm">
         {totalCourses > 0
-          ? `Вы записаны на ${totalCourses} ${totalCourses === 1 ? "курс" : totalCourses < 5 ? "курса" : "курсов"}. Продолжайте!`
-          : "Просмотрите каталог и начните свой первый курс."}
+          ? t.dashboard.enrolled(totalCourses)
+          : t.dashboard.noEnrolled}
       </p>
     </div>
   );

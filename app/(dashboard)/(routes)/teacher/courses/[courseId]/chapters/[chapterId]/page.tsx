@@ -10,14 +10,12 @@ import { ChapterAccessForm } from "./_components/chapter-access-form";
 import { ChapterVideoForm } from "./_components/chapter-video-form";
 import Banner from "@/components/banner";
 import { ChapterActions } from "./_components/chapter-actions";
+import { getT } from "@/lib/get-lang";
 
-const ChapterIdPage = async ({
-  params,
-}: {
-  params: { chapterId: string; courseId: string };
-}) => {
+const ChapterIdPage = async ({ params }: { params: { chapterId: string; courseId: string } }) => {
   const { userId } = auth();
   if (!userId) return redirect("/");
+  const t = getT();
 
   const chapter = await db.chapter.findUnique({
     where: { id: params.chapterId, courseId: params.courseId },
@@ -33,7 +31,7 @@ const ChapterIdPage = async ({
   return (
     <>
       {!chapter.isPublished && (
-        <Banner label="Эта глава не опубликована. Студенты её не видят." variant="warning" />
+        <Banner label={t.chapter.notPublished} variant="warning" />
       )}
       <div className="p-6">
         <div className="flex items-center justify-between">
@@ -43,12 +41,12 @@ const ChapterIdPage = async ({
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Назад к настройке курса
+              {t.chapter.backToCourse}
             </Link>
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-y-2">
-                <h1 className="text-2xl font-medium">Создание главы</h1>
-                <span className="text-sm text-slate-700">Заполните все поля {completionText}</span>
+                <h1 className="text-2xl font-medium">{t.chapter.creation}</h1>
+                <span className="text-sm text-slate-700">{t.common.fillAll} {completionText}</span>
               </div>
               <ChapterActions
                 disabled={!isComplete}
@@ -64,7 +62,7 @@ const ChapterIdPage = async ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl">Настройте главу</h2>
+                <h2 className="text-xl">{t.chapter.setup}</h2>
               </div>
               <ChapterTitleForm initialData={chapter} courseId={params.courseId} chapterId={params.chapterId} />
               <ChapterDescriptionForm initialData={chapter} courseId={params.courseId} chapterId={params.chapterId} />
@@ -72,7 +70,7 @@ const ChapterIdPage = async ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={Eye} />
-                <h2 className="text-xl">Настройки доступа</h2>
+                <h2 className="text-xl">{t.chapter.access}</h2>
               </div>
               <ChapterAccessForm initialData={chapter} courseId={params.courseId} chapterId={params.chapterId} />
             </div>
@@ -80,7 +78,7 @@ const ChapterIdPage = async ({
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={Video} />
-              <h2 className="text-xl">Добавить видео</h2>
+              <h2 className="text-xl">{t.chapter.video}</h2>
             </div>
             <ChapterVideoForm initialData={chapter} courseId={params.courseId} chapterId={params.chapterId} />
           </div>

@@ -4,7 +4,6 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import {
   Form,
   FormControl,
@@ -13,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Loader2, Pencil, PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -21,28 +20,24 @@ import { cn } from "@/lib/utils";
 import { Chapter, Course } from "@prisma/client";
 import { Input } from "@/components/ui/input";
 import { ChaptersList } from "./chapters-list";
+import { useLanguage } from "@/hooks/use-language";
 
 interface ChaptersFormProps {
   initialData: Course & { chapters: Chapter[] };
   courseId: string;
 }
 
-const formSchema = z.object({
-  title: z.string().min(1),
-});
+const formSchema = z.object({ title: z.string().min(1) });
 
 export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
   const router = useRouter();
+  const { t } = useLanguage();
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const toggleCreating = () => setIsCreating((current) => !current);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-    },
+    defaultValues: { title: "" },
   });
 
   const { isSubmitting, isValid } = form.formState;
@@ -50,33 +45,28 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.post(`/api/courses/${courseId}/chapters`, values);
-      toast.success("Глава создана");
-      toggleCreating();
+      toast.success(t.course.chapterCreated);
+      setIsCreating(false);
       router.refresh();
-    } catch (error) {
-      toast.error("Что-то пошло не так");
+    } catch {
+      toast.error(t.messages.error);
     }
   };
 
   const onReorder = async (updateData: { id: string; position: number }[]) => {
     try {
       setIsUpdating(true);
-
-      await axios.put(`/api/courses/${courseId}/chapters/reorder`, {
-        list: updateData,
-      });
-      toast.success("Порядок глав сохранён");
+      await axios.put(`/api/courses/${courseId}/chapters/reorder`, { list: updateData });
+      toast.success(t.course.chapterReordered);
       router.refresh();
     } catch {
-      toast.error("Что-то пошло не так");
+      toast.error(t.messages.error);
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const onEdit = (id: string) => {
-    router.push(`/teacher/courses/${courseId}/chapters/${id}`);
-  };
+  const onEdit = (id: string) => router.push(`/teacher/courses/${courseId}/chapters/${id}`);
 
   return (
     <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
@@ -86,25 +76,16 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
         </div>
       )}
       <div className="font-medium flex items-center justify-between">
-        Главы курса
-        <Button variant="ghost" onClick={toggleCreating}>
-          {isCreating ? (
-            <>Отмена</>
-          ) : (
-            <>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Добавить главу
-            </>
+        {t.course.chapters}
+        <Button variant="ghost" onClick={() => setIsCreating((v) => !v)}>
+          {isCreating ? t.common.cancel : (
+            <><PlusCircle className="h-4 w-4 mr-2" />{t.course.chaptersAdd}</>
           )}
         </Button>
       </div>
-
       {isCreating && (
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
             <FormField
               control={form.control}
               name="title"
@@ -113,7 +94,7 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="например 'Введение в курс...'"
+                      placeholder={t.chapter.titlePlaceholder}
                       {...field}
                     />
                   </FormControl>
@@ -122,19 +103,14 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
               )}
             />
             <Button disabled={!isValid || isSubmitting} type="submit">
-              Создать
+              {t.common.create}
             </Button>
           </form>
         </Form>
       )}
       {!isCreating && (
-        <div
-          className={cn(
-            "text-sm mt-2",
-            !initialData.chapters.length && "text-slate-500 italic"
-          )}
-        >
-          {!initialData.chapters.length && "Глав пока нет"}
+        <div className={cn("text-sm mt-2", !initialData.chapters.length && "text-slate-500 italic")}>
+          {!initialData.chapters.length && t.course.chaptersNone}
           <ChaptersList
             onEdit={onEdit}
             onReorder={onReorder}
@@ -143,9 +119,7 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
         </div>
       )}
       {!isCreating && (
-        <p className="text-xs text-muted-foreground mt-4">
-          Перетащите главы для изменения порядка
-        </p>
+        <p className="text-xs text-muted-foreground mt-4">{t.course.chaptersReorder}</p>
       )}
     </div>
   );

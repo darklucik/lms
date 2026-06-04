@@ -5,9 +5,9 @@ import { Trash } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { useLanguage } from "@/hooks/use-language";
 
 interface ChapterActionsProps {
   disabled: boolean;
@@ -16,34 +16,24 @@ interface ChapterActionsProps {
   isPublished: boolean;
 }
 
-export const ChapterActions = ({
-  disabled,
-  courseId,
-  chapterId,
-  isPublished,
-}: ChapterActionsProps) => {
+export const ChapterActions = ({ disabled, courseId, chapterId, isPublished }: ChapterActionsProps) => {
   const router = useRouter();
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
     try {
       setIsLoading(true);
-
       if (isPublished) {
-        await axios.patch(
-          `/api/courses/${courseId}/chapters/${chapterId}/unpublish`
-        );
-        toast.success("Глава снята с публикации");
+        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/unpublish`);
+        toast.success(t.chapter.unpublished);
       } else {
-        await axios.patch(
-          `/api/courses/${courseId}/chapters/${chapterId}/publish`
-        );
-        toast.success("Глава опубликована");
+        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/publish`);
+        toast.success(t.chapter.published);
       }
-
       router.refresh();
     } catch {
-      toast.error("Что-то пошло не так");
+      toast.error(t.messages.error);
     } finally {
       setIsLoading(false);
     }
@@ -52,14 +42,12 @@ export const ChapterActions = ({
   const onDelete = async () => {
     try {
       setIsLoading(true);
-
       await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`);
-
-      toast.success("Глава удалена");
+      toast.success(t.chapter.deleted);
       router.refresh();
       router.push(`/teacher/courses/${courseId}`);
     } catch {
-      toast.error("Что-то пошло не так");
+      toast.error(t.messages.error);
     } finally {
       setIsLoading(false);
     }
@@ -67,13 +55,8 @@ export const ChapterActions = ({
 
   return (
     <div className="flex items-center gap-x-2">
-      <Button
-        onClick={onClick}
-        disabled={disabled || isLoading}
-        variant="outline"
-        size="sm"
-      >
-        {isPublished ? "Unpublish" : "Publish"}
+      <Button onClick={onClick} disabled={disabled || isLoading} variant="outline" size="sm">
+        {isPublished ? t.common.unpublish : t.common.publish}
       </Button>
       <ConfirmModal onConfirm={onDelete}>
         <Button size="sm" disabled={isLoading}>
