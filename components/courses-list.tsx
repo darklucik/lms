@@ -1,5 +1,8 @@
+"use client";
+
 import { Category, Course } from "@prisma/client";
 import CourseCard from "./course-card";
+import { useLanguage } from "@/hooks/use-language";
 
 type CourseWithProgressWithCategory = Course & {
   category: Category | null;
@@ -12,6 +15,8 @@ interface CoursesListProps {
 }
 
 const CoursesList = ({ items }: CoursesListProps) => {
+  const { t } = useLanguage();
+
   return (
     <div>
       <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -29,7 +34,7 @@ const CoursesList = ({ items }: CoursesListProps) => {
       </div>
       {items.length === 0 && (
         <div className="text-center text-sm text-muted-foreground mt-10">
-          Курсы не найдены
+          {t.search.noResults}
         </div>
       )}
     </div>

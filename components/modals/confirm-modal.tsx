@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useLanguage } from "@/hooks/use-language";
 
 interface ConfirmModalProps {
   children: React.ReactNode;
@@ -18,19 +19,19 @@ interface ConfirmModalProps {
 }
 
 export const ConfirmModal = ({ children, onConfirm }: ConfirmModalProps) => {
+  const { t } = useLanguage();
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action can not be undone.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t.confirm.areYouSure}</AlertDialogTitle>
+          <AlertDialogDescription>{t.confirm.cannotUndo}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Отмена</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Продолжить</AlertDialogAction>
+          <AlertDialogCancel>{t.confirm.cancel}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{t.confirm.confirm}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

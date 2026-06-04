@@ -1,6 +1,9 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Progress } from "./ui/progress";
 import { CheckCircle2 } from "lucide-react";
+import { useLanguage } from "@/hooks/use-language";
 
 interface CourseProgressProps {
   value: number;
@@ -9,7 +12,12 @@ interface CourseProgressProps {
 }
 
 export const CourseProgress = ({ value, variant, size }: CourseProgressProps) => {
+  const { lang } = useLanguage();
   const isSuccess = variant === "success" || value === 100;
+  const label = lang === "uz"
+    ? `${Math.round(value)}% bajarildi`
+    : `${Math.round(value)}% выполнено`;
+
   return (
     <div className="space-y-1.5">
       <Progress
@@ -18,17 +26,13 @@ export const CourseProgress = ({ value, variant, size }: CourseProgressProps) =>
         variant={variant}
       />
       <div className="flex items-center gap-x-1.5">
-        {isSuccess ? (
-          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-        ) : null}
-        <p
-          className={cn(
-            "text-xs font-medium",
-            isSuccess ? "text-emerald-700" : "text-violet-700",
-            size === "sm" && "text-xs"
-          )}
-        >
-          {Math.round(value)}% complete
+        {isSuccess ? <CheckCircle2 className="h-3 w-3 text-emerald-600" /> : null}
+        <p className={cn(
+          "text-xs font-medium",
+          isSuccess ? "text-emerald-700" : "text-violet-700",
+          size === "sm" && "text-xs"
+        )}>
+          {label}
         </p>
       </div>
     </div>

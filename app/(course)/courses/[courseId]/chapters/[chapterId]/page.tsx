@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { auth, clerkClient } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { File, Download } from "lucide-react";
 import { getChapter } from "@/actions/get-chapter";
@@ -7,6 +7,8 @@ import { Preview } from "@/components/preview";
 import { VideoPlayer } from "./_components/video-player";
 import { CourseProgressButton } from "./_components/course-progress-button";
 import { Separator } from "@/components/ui/separator";
+import { CompletionBanner } from "./_components/completion-banner";
+import { getT } from "@/lib/get-lang";
 
 const ChapterIdPage = async ({
   params,
@@ -15,17 +17,33 @@ const ChapterIdPage = async ({
 }) => {
   const { userId } = auth();
   if (!userId) return redirect("/");
+  const t = getT();
 
   const { chapter, course, attachments, nextChapter, userProgress } =
     await getChapter({ userId, chapterId: params.chapterId, courseId: params.courseId });
 
   if (!chapter || !course) return redirect("/");
 
+  // Get student name for certificate
+  const user = await clerkClient.users.getUser(userId).catch(() => null);
+  const studentName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Student";
+
   return (
     <div>
       {userProgress?.isCompleted && (
-        <Banner variant="success" label="Вы уже прошли эту главу. Отличная работа!" />
+        <Banner
+          variant="success"
+          label={t.chapter.completedMsg}
+        />
       )}
+
+      {/* Completion + Certificate banner */}
+      <CompletionBanner
+        courseId={params.courseId}
+        courseTitle={course.title}
+        studentName={studentName}
+      />
+
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
         <div className="p-4">
           <VideoPlayer
@@ -62,7 +80,7 @@ const ChapterIdPage = async ({
           {!!attachments.length && (
             <div className="mt-6">
               <Separator className="mb-4" />
-              <h3 className="text-sm font-semibold mb-3">Материалы курса</h3>
+              <h3 className="text-sm font-semibold mb-3">{t.course.attachments}</h3>
               <div className="flex flex-col gap-y-2">
                 {attachments.map((attachment) => (
                   <a

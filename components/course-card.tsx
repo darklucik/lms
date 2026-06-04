@@ -1,8 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { CourseProgress } from "./course-progress";
 import { Badge } from "./ui/badge";
+import { useLanguage } from "@/hooks/use-language";
 
 interface CourseCardProps {
   id: string;
@@ -14,6 +17,12 @@ interface CourseCardProps {
 }
 
 const CourseCard = ({ id, title, imageUrl, chaptersLength, progress, category }: CourseCardProps) => {
+  const { lang } = useLanguage();
+
+  const chaptersLabel = lang === "uz"
+    ? `${chaptersLength} ta bob`
+    : `${chaptersLength} ${chaptersLength === 1 ? "урок" : chaptersLength < 5 ? "урока" : "уроков"}`;
+
   return (
     <Link href={`/courses/${id}`}>
       <div className="group border rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-white h-full flex flex-col">
@@ -33,7 +42,7 @@ const CourseCard = ({ id, title, imageUrl, chaptersLength, progress, category }:
           </h3>
           <div className="flex items-center gap-x-1 text-xs text-muted-foreground mt-auto">
             <BookOpen className="h-3.5 w-3.5" />
-            <span>{chaptersLength} {chaptersLength === 1 ? "урок" : chaptersLength < 5 ? "урока" : "уроков"}</span>
+            <span>{chaptersLabel}</span>
           </div>
           {progress !== null && (
             <div className="pt-1">

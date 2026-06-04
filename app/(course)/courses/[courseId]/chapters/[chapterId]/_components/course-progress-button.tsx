@@ -5,9 +5,9 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-
 import { Button } from "@/components/ui/button";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
+import { useLanguage } from "@/hooks/use-language";
 
 interface CourseProgressButtonProps {
   chapterId: string;
@@ -24,31 +24,23 @@ export const CourseProgressButton = ({
 }: CourseProgressButtonProps) => {
   const router = useRouter();
   const confetti = useConfettiStore();
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
     try {
       setIsLoading(true);
-
-      await axios.put(
-        `/api/courses/${courseId}/chapters/${chapterId}/progress`,
-        {
-          isCompleted: !isCompleted,
-        }
-      );
-
-      if (!isCompleted && !nextChapterId) {
-        confetti.onOpen();
-      }
-
+      await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`, {
+        isCompleted: !isCompleted,
+      });
+      if (!isCompleted && !nextChapterId) confetti.onOpen();
       if (!isCompleted && nextChapterId) {
         router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
       }
-
-      toast.success("Progress updated");
+      toast.success(t.messages.saved);
       router.refresh();
     } catch {
-      toast.error("Что-то пошло не так");
+      toast.error(t.messages.error);
     } finally {
       setIsLoading(false);
     }
@@ -67,11 +59,8 @@ export const CourseProgressButton = ({
         : "w-full md:w-auto bg-violet-600 hover:bg-violet-700 text-white"
       }
     >
-      {isCompleted ? (
-        <><XCircle className="h-4 w-4 mr-2" />Отметить как непройденное</>
-      ) : (
-        <><CheckCircle className="h-4 w-4 mr-2" />Отметить как пройденное</>
-      )}
+      <Icon className="h-4 w-4 mr-2" />
+      {isCompleted ? t.chapter.incomplete : t.chapter.complete}
     </Button>
   );
 };

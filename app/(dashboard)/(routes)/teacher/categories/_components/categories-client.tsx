@@ -8,6 +8,7 @@ import { Loader2, Plus, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Category } from "@prisma/client";
+import { useLanguage } from "@/hooks/use-language";
 
 interface CategoriesClientProps {
   initialCategories: Category[];
@@ -15,10 +16,17 @@ interface CategoriesClientProps {
 
 export const CategoriesClient = ({ initialCategories }: CategoriesClientProps) => {
   const router = useRouter();
+  const { t, lang } = useLanguage();
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [name, setName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const addedMsg = lang === "uz" ? "Kategoriya qo'shildi" : "Категория добавлена";
+  const deletedMsg = lang === "uz" ? "Kategoriya o'chirildi" : "Категория удалена";
+  const addLabel = lang === "uz" ? "Qo'shish" : "Добавить";
+  const placeholder = lang === "uz" ? "Kategoriya nomi..." : "Название категории...";
+  const emptyMsg = lang === "uz" ? "Kategoriyalar yo'q. Birinchisini qo'shing." : "Категорий пока нет. Добавьте первую.";
 
   const onCreate = async () => {
     if (!name.trim()) return;
@@ -27,10 +35,10 @@ export const CategoriesClient = ({ initialCategories }: CategoriesClientProps) =
       const res = await axios.post("/api/categories", { name: name.trim() });
       setCategories((prev) => [...prev, res.data].sort((a, b) => a.name.localeCompare(b.name)));
       setName("");
-      toast.success("Категория добавлена");
+      toast.success(addedMsg);
       router.refresh();
     } catch (error: any) {
-      toast.error(error?.response?.data || "Что-то пошло не так");
+      toast.error(error?.response?.data || t.messages.error);
     } finally {
       setIsCreating(false);
     }
@@ -41,10 +49,10 @@ export const CategoriesClient = ({ initialCategories }: CategoriesClientProps) =
       setDeletingId(id);
       await axios.delete(`/api/categories/${id}`);
       setCategories((prev) => prev.filter((c) => c.id !== id));
-      toast.success("Категория удалена");
+      toast.success(deletedMsg);
       router.refresh();
     } catch {
-      toast.error("Что-то пошло не так");
+      toast.error(t.messages.error);
     } finally {
       setDeletingId(null);
     }
@@ -52,50 +60,31 @@ export const CategoriesClient = ({ initialCategories }: CategoriesClientProps) =
 
   return (
     <div className="space-y-6">
-      {/* Add form */}
       <div className="flex gap-x-2">
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Название категории..."
+          placeholder={placeholder}
           disabled={isCreating}
           onKeyDown={(e) => e.key === "Enter" && onCreate()}
           className="max-w-sm"
         />
         <Button onClick={onCreate} disabled={isCreating || !name.trim()}>
-          {isCreating ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4 mr-2" />
-          )}
-          {!isCreating && "Добавить"}
+          {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+          {!isCreating && addLabel}
         </Button>
       </div>
 
-      {/* Categories list */}
       {categories.length === 0 ? (
-        <div className="text-sm text-muted-foreground italic py-4">
-          Категорий пока нет. Добавьте первую.
-        </div>
+        <div className="text-sm text-muted-foreground italic py-4">{emptyMsg}</div>
       ) : (
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
-            <div
-              key={category.id}
-              className="flex items-center gap-x-2 bg-violet-50 border border-violet-200 text-violet-700 rounded-full px-4 py-1.5 text-sm font-medium"
-            >
+            <div key={category.id} className="flex items-center gap-x-2 bg-violet-50 border border-violet-200 text-violet-700 rounded-full px-4 py-1.5 text-sm font-medium">
               <Tag className="h-3.5 w-3.5" />
               <span>{category.name}</span>
-              <button
-                onClick={() => onDelete(category.id)}
-                disabled={deletingId === category.id}
-                className="hover:opacity-75 transition ml-1"
-              >
-                {deletingId === category.id ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <X className="h-3.5 w-3.5" />
-                )}
+              <button onClick={() => onDelete(category.id)} disabled={deletingId === category.id} className="hover:opacity-75 transition ml-1">
+                {deletingId === category.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />}
               </button>
             </div>
           ))}

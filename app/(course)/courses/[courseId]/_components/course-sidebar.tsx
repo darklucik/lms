@@ -1,8 +1,8 @@
 import { Chapter, Course, UserProgress } from "@prisma/client";
-import { redirect } from "next/navigation";
 import CourseSidebarItem from "./course-sidebar-item";
 import { CourseProgress } from "@/components/course-progress";
 import { BookOpen } from "lucide-react";
+import { getT, getLang } from "@/lib/get-lang";
 
 interface CourseSidebarProps {
   course: Course & {
@@ -12,9 +12,14 @@ interface CourseSidebarProps {
 }
 
 const CourseSidebar = async ({ course, progressCount }: CourseSidebarProps) => {
+  const lang = getLang();
   const completedCount = course.chapters.filter(
     (ch) => ch.userProgress?.[0]?.isCompleted
   ).length;
+
+  const lessonsLabel = lang === "uz"
+    ? `${completedCount} / ${course.chapters.length} bob bajarildi`
+    : `${completedCount} из ${course.chapters.length} уроков пройдено`;
 
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto bg-white">
@@ -30,9 +35,7 @@ const CourseSidebar = async ({ course, progressCount }: CourseSidebarProps) => {
             variant={progressCount === 100 ? "success" : "default"}
             value={progressCount}
           />
-          <p className="text-xs text-muted-foreground mt-1">
-            {completedCount} из {course.chapters.length} уроков пройдено
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">{lessonsLabel}</p>
         </div>
       </div>
       <div className="flex flex-col w-full py-2">
