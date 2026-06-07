@@ -166,7 +166,17 @@ export const CodePlayground = ({ defaultLang = "javascript" }: CodePlaygroundPro
     try {
       pyodide.globals.set("__user_code__", code);
       await pyodide.runPythonAsync(`
-import io, contextlib, traceback
+import io, contextlib, traceback, builtins, js
+
+# input() has no stdin in Pyodide -> use the browser prompt() dialog instead.
+def __pg_input__(__p__=""):
+    __v__ = js.prompt(str(__p__))
+    if __v__ is None:
+        raise EOFError("input bekor qilindi")
+    print(str(__p__) + str(__v__))
+    return str(__v__)
+builtins.input = __pg_input__
+
 __out__, __err__ = io.StringIO(), io.StringIO()
 with contextlib.redirect_stdout(__out__), contextlib.redirect_stderr(__err__):
     try:
