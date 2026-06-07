@@ -39,8 +39,11 @@ export const CourseProgressButton = ({
       }
       toast.success(t.messages.saved);
       router.refresh();
-    } catch {
-      toast.error(t.messages.error);
+    } catch (error) {
+      // DEBUG: surface the real failure (status/message) in the prod browser console.
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      console.error("[PROGRESS_BUTTON_ERROR]", { courseId, chapterId, status, error });
+      toast.error(`${t.messages.error}${status ? ` (${status})` : ""}`);
     } finally {
       setIsLoading(false);
     }

@@ -59,8 +59,11 @@ export const VideoPlayer = ({
         router.refresh();
         if (nextChapterId) router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
       }
-    } catch {
-      toast.error(t.messages.error);
+    } catch (error) {
+      // DEBUG: surface the real failure (status/message) in the prod browser console.
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      console.error("[VIDEO_PROGRESS_ERROR]", { courseId, chapterId, status, error });
+      toast.error(`${t.messages.error}${status ? ` (${status})` : ""}`);
     }
   };
 
