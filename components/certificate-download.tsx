@@ -102,6 +102,7 @@ export function CertificateDownload({
                   courseTitle={courseTitle}
                   completionDate={completionDate}
                   certificateId={certificateId}
+                  lang={lang}
                 />
               </div>
             </div>

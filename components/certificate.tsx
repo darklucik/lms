@@ -7,10 +7,33 @@ interface CertificateProps {
   courseTitle: string;
   completionDate: string;
   certificateId: string;
+  lang?: "uz" | "ru";
 }
 
+const TEXT = {
+  uz: {
+    brandSub: "Professional ta'lim",
+    certOf: "Tugatganlik",
+    completion: "SERTIFIKATI",
+    certifies: "Ushbu sertifikat tasdiqlaydiki",
+    completed: "quyidagi kursni muvaffaqiyatli tamomladi",
+    dateLabel: "Tugatilgan sana",
+    idLabel: "Sertifikat ID",
+  },
+  ru: {
+    brandSub: "Профессиональное образование",
+    certOf: "Сертификат",
+    completion: "О ЗАВЕРШЕНИИ",
+    certifies: "Настоящим подтверждается, что",
+    completed: "успешно завершил(а) курс",
+    dateLabel: "Дата завершения",
+    idLabel: "ID сертификата",
+  },
+} as const;
+
 export const Certificate = forwardRef<HTMLDivElement, CertificateProps>(
-  ({ studentName, courseTitle, completionDate, certificateId }, ref) => {
+  ({ studentName, courseTitle, completionDate, certificateId, lang = "uz" }, ref) => {
+    const tr = TEXT[lang];
     return (
       <div
         ref={ref}
@@ -58,7 +81,7 @@ export const Certificate = forwardRef<HTMLDivElement, CertificateProps>(
                 MTLearning
               </div>
               <div style={{ color: "#ddd6fe", fontSize: "11px", letterSpacing: "1.5px", textTransform: "uppercase" }}>
-                Professional Education
+                {tr.brandSub}
               </div>
             </div>
           </div>
@@ -66,10 +89,10 @@ export const Certificate = forwardRef<HTMLDivElement, CertificateProps>(
           {/* Header right label */}
           <div style={{ textAlign: "right" }}>
             <div style={{ color: "#ede9fe", fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase" }}>
-              Certificate of
+              {tr.certOf}
             </div>
             <div style={{ color: "#ffffff", fontWeight: "700", fontSize: "18px", letterSpacing: "1px" }}>
-              COMPLETION
+              {tr.completion}
             </div>
           </div>
         </div>
@@ -105,7 +128,7 @@ export const Certificate = forwardRef<HTMLDivElement, CertificateProps>(
               marginBottom: "18px",
             }}
           >
-            This certifies that
+            {tr.certifies}
           </div>
 
           {/* Student name */}
@@ -155,7 +178,7 @@ export const Certificate = forwardRef<HTMLDivElement, CertificateProps>(
               marginBottom: "12px",
             }}
           >
-            has successfully completed the course
+            {tr.completed}
           </div>
 
           {/* Course title */}
@@ -196,7 +219,7 @@ export const Certificate = forwardRef<HTMLDivElement, CertificateProps>(
           {/* Date */}
           <div>
             <div style={{ color: "#9ca3af", fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "5px" }}>
-              Date of Completion
+              {tr.dateLabel}
             </div>
             <div style={{ color: "#ffffff", fontSize: "15px", fontWeight: "600" }}>
               {completionDate}
@@ -224,7 +247,7 @@ export const Certificate = forwardRef<HTMLDivElement, CertificateProps>(
           {/* Certificate ID */}
           <div style={{ textAlign: "right" }}>
             <div style={{ color: "#9ca3af", fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "5px" }}>
-              Certificate ID
+              {tr.idLabel}
             </div>
             <div style={{ color: "#a78bfa", fontSize: "12px", fontWeight: "600", letterSpacing: "1px" }}>
               {certificateId}
