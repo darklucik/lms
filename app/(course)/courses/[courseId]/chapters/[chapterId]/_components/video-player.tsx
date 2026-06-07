@@ -76,6 +76,10 @@ export const VideoPlayer = ({
     );
   }
 
+  // No video uploaded (e.g. text-only lesson): don't render an empty <video>
+  // whose loading spinner would never clear (onCanPlay never fires on empty src).
+  if (!videoUrl) return null;
+
   if (youtubeId) {
     return (
       <div className="relative aspect-video rounded-xl overflow-hidden bg-black">

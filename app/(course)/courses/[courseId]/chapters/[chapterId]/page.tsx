@@ -45,17 +45,19 @@ const ChapterIdPage = async ({
       />
 
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
-        <div className="p-4">
-          <VideoPlayer
-            chapterId={params.chapterId}
-            title={chapter.title}
-            courseId={params.courseId}
-            nextChapterId={nextChapter?.id}
-            videoUrl={chapter.videoUrl || ""}
-            isLocked={false}
-            completeOnEnd={!userProgress?.isCompleted}
-          />
-        </div>
+        {chapter.videoUrl && (
+          <div className="p-4">
+            <VideoPlayer
+              chapterId={params.chapterId}
+              title={chapter.title}
+              courseId={params.courseId}
+              nextChapterId={nextChapter?.id}
+              videoUrl={chapter.videoUrl}
+              isLocked={false}
+              completeOnEnd={!userProgress?.isCompleted}
+            />
+          </div>
+        )}
         <div className="px-4 pb-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-y-3 py-4">
             <div>
