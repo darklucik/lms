@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" fill="none">
+  <rect width="800" height="450" fill="#1e1e2e"/>
+  <!-- terminal window -->
+  <rect x="40" y="40" width="720" height="370" rx="14" fill="#11111b" stroke="#313244" stroke-width="2"/>
+  <circle cx="72" cy="72" r="8" fill="#f38ba8"/>
+  <circle cx="98" cy="72" r="8" fill="#f9e2af"/>
+  <circle cx="124" cy="72" r="8" fill="#a6e3a1"/>
+  <g font-family="monospace" font-size="24">
+    <text x="70" y="140" fill="#a6e3a1">$ git init</text>
+    <text x="70" y="180" fill="#cdd6f4">Initialized empty repository</text>
+    <text x="70" y="220" fill="#a6e3a1">$ git commit -m "birinchi"</text>
+    <text x="70" y="260" fill="#fab387">[main] 1 file changed</text>
+    <text x="70" y="300" fill="#a6e3a1">$ git push origin main<tspan fill="#cdd6f4"> ▋</tspan></text>
+  </g>
+  <text x="70" y="365" font-family="Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">Git &amp; Terminal asoslari</text>
+</svg>

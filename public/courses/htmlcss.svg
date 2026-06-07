@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" fill="none">
+  <defs>
+    <linearGradient id="webBg" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e34f26"/>
+      <stop offset="1" stop-color="#264de4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#webBg)"/>
+  <g opacity="0.12" font-family="monospace" font-size="22" fill="#ffffff">
+    <text x="40" y="70">&lt;div class="card"&gt;</text>
+    <text x="40" y="100">  &lt;h1&gt;Salom&lt;/h1&gt;</text>
+    <text x="40" y="400">&lt;/div&gt;</text>
+  </g>
+  <!-- code brackets mark -->
+  <text x="470" y="290" font-family="monospace" font-size="150" font-weight="900" fill="#ffffff" opacity="0.95">&lt;/&gt;</text>
+  <text x="40" y="250" font-family="Arial, sans-serif" font-size="56" font-weight="800" fill="#ffffff">HTML &amp; CSS</text>
+  <text x="42" y="295" font-family="Arial, sans-serif" font-size="26" font-weight="600" fill="#ffe8df">Veb-sahifa yaratish · Создание сайта</text>
+</svg>

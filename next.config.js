@@ -2,7 +2,9 @@
 const nextConfig = {
   swcMinify: false,
   images: {
-    domains: ["utfs.io"],
+    domains: ["utfs.io", "picsum.photos"],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",
