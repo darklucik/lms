@@ -161,15 +161,30 @@ export const CodePlayground = ({ defaultLang = "javascript" }: CodePlaygroundPro
       push({ type: "error", text: e?.message || "Pyodide error" });
       return;
     }
-    pyodide.setStdout({ batched: (s: string) => push({ type: "log", text: s }) });
-    pyodide.setStderr({ batched: (s: string) => push({ type: "error", text: s }) });
+    // Capture output inside Python (redirect_stdout/stderr into buffers).
+    // Avoids Pyodide's setStdout batched callback, which throws OSError[29].
     try {
-      await pyodide.runPythonAsync(code);
+      pyodide.globals.set("__user_code__", code);
+      await pyodide.runPythonAsync(`
+import io, contextlib, traceback
+__out__, __err__ = io.StringIO(), io.StringIO()
+with contextlib.redirect_stdout(__out__), contextlib.redirect_stderr(__err__):
+    try:
+        exec(__user_code__, {"__name__": "__main__"})
+    except SystemExit:
+        pass
+    except BaseException:
+        traceback.print_exc()
+__stdout__ = __out__.getvalue()
+__stderr__ = __err__.getvalue()
+`);
+      const out = pyodide.globals.get("__stdout__");
+      const err = pyodide.globals.get("__stderr__");
+      if (out) push({ type: "log", text: String(out).replace(/\n$/, "") });
+      if (err) push({ type: "error", text: String(err).replace(/\n$/, "") });
     } catch (e: any) {
-      const msg = String(e?.message || e);
-      // Pyodide errors include a long traceback; keep the meaningful tail.
-      const lines = msg.trim().split("\n");
-      push({ type: "error", text: lines.slice(-3).join("\n") });
+      const msg = String(e?.message || e).trim().split("\n");
+      push({ type: "error", text: msg.slice(-3).join("\n") });
     }
   };
 
