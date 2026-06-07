@@ -8,7 +8,17 @@ import { VideoPlayer } from "./_components/video-player";
 import { CourseProgressButton } from "./_components/course-progress-button";
 import { Separator } from "@/components/ui/separator";
 import { CompletionBanner } from "./_components/completion-banner";
+import { CodePlayground, type PlaygroundLang } from "@/components/code-playground";
 import { getT } from "@/lib/get-lang";
+
+function detectLang(courseTitle: string): PlaygroundLang {
+  const t = courseTitle.toLowerCase();
+  if (t.includes("python")) return "python";
+  if (t.includes("javascript")) return "javascript";
+  if (t.includes("html") || t.includes("css")) return "html";
+  if (t.includes("git") || t.includes("terminal")) return "shell";
+  return "javascript";
+}
 
 const ChapterIdPage = async ({
   params,
@@ -79,6 +89,11 @@ const ChapterIdPage = async ({
               <Preview value={chapter.description} />
             </div>
           )}
+
+          {/* Interactive code playground — students can run lesson code live */}
+          <div className="mt-6">
+            <CodePlayground defaultLang={detectLang(course.title)} />
+          </div>
           {!!attachments.length && (
             <div className="mt-6">
               <Separator className="mb-4" />
