@@ -10,6 +10,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
+import { getChapterVideo } from "../lib/course-videos";
 
 const db = new PrismaClient();
 
@@ -487,6 +488,7 @@ async function main() {
           create: c.chapters.map((ch) => ({
             title: ch.title,
             description: ch.description,
+            videoUrl: getChapterVideo(c.title, ch.title) ?? undefined,
             position: ch.position,
             isFree: ch.isFree,
             isPublished: true,

@@ -12,6 +12,8 @@ import { Grip, Pencil } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/hooks/use-language";
+import { pickContent } from "@/lib/content-i18n";
 
 interface ChaptersListProps {
   items: Chapter[];
@@ -24,6 +26,7 @@ export const ChaptersList = ({
   onReorder,
   onEdit,
 }: ChaptersListProps) => {
+  const { lang } = useLanguage();
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState(items);
 
@@ -92,7 +95,7 @@ export const ChaptersList = ({
                     >
                       <Grip className="h-5 w-5" />
                     </div>
-                    {chapter.title}
+                    {pickContent(chapter.title, lang)}
                     <div className="ml-auto pr-2 flex items-center gap-x-2">
                       {chapter.isFree && <Badge>Free</Badge>}
                       <Badge

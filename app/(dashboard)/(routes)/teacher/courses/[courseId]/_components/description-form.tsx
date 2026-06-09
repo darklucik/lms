@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
@@ -14,29 +14,35 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Course } from "@prisma/client";
 import { useLanguage } from "@/hooks/use-language";
+import { pickContent, parseContent, composeContent } from "@/lib/content-i18n";
 
 interface DescriptionFormProps {
   initialData: Course;
   courseId: string;
 }
 
-const formSchema = z.object({ description: z.string().min(1) });
-
 export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps) => {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
 
+  const formSchema = z.object({
+    descriptionUz: z.string().min(1),
+    descriptionRu: z.string().min(1),
+  });
+
+  const parsed = parseContent(initialData?.description || "");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { description: initialData?.description || "" },
+    defaultValues: { descriptionUz: parsed.uz, descriptionRu: parsed.ru },
   });
 
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}`, values);
+      const description = composeContent({ uz: values.descriptionUz, ru: values.descriptionRu });
+      await axios.patch(`/api/courses/${courseId}`, { description });
       toast.success(t.course.descriptionUpdated);
       setIsEditing(false);
       router.refresh();
@@ -44,6 +50,8 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
       toast.error(t.messages.error);
     }
   };
+
+  const localized = pickContent(initialData.description, lang);
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
@@ -56,8 +64,8 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
         </Button>
       </div>
       {!isEditing && (
-        <p className={cn("text-sm mt-2", !initialData.description && "text-slate-500 italic")}>
-          {initialData.description || t.course.descriptionPlaceholder}
+        <p className={cn("text-sm mt-2", !localized && "text-slate-500 italic")}>
+          {localized || t.course.descriptionPlaceholder}
         </p>
       )}
       {isEditing && (
@@ -65,9 +73,23 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
             <FormField
               control={form.control}
-              name="description"
+              name="descriptionUz"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>O&apos;zbekcha (UZ)</FormLabel>
+                  <FormControl>
+                    <Textarea disabled={isSubmitting} placeholder={t.course.descriptionPlaceholder} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="descriptionRu"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Русский (RU)</FormLabel>
                   <FormControl>
                     <Textarea disabled={isSubmitting} placeholder={t.course.descriptionPlaceholder} {...field} />
                   </FormControl>

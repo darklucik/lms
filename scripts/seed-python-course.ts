@@ -8,6 +8,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
+import { getChapterVideo } from "../lib/course-videos";
 
 const db = new PrismaClient();
 
@@ -1585,6 +1586,7 @@ async function main() {
         courseId: kurs.id,
         title: bob.title,
         description: bob.description,
+        videoUrl: getChapterVideo(kurs.title, bob.title) ?? undefined,
         position: bob.position,
         isFree: bob.isFree,
         isPublished: true,

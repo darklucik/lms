@@ -9,7 +9,8 @@ import { CourseProgressButton } from "./_components/course-progress-button";
 import { Separator } from "@/components/ui/separator";
 import { CompletionBanner } from "./_components/completion-banner";
 import { CodePlayground, type PlaygroundLang } from "@/components/code-playground";
-import { getT } from "@/lib/get-lang";
+import { getT, getLang } from "@/lib/get-lang";
+import { pickContent } from "@/lib/content-i18n";
 
 function detectLang(courseTitle: string): PlaygroundLang {
   const t = courseTitle.toLowerCase();
@@ -28,11 +29,17 @@ const ChapterIdPage = async ({
   const { userId } = auth();
   if (!userId) return redirect("/");
   const t = getT();
+  const lang = getLang();
 
   const { chapter, course, attachments, nextChapter, userProgress } =
     await getChapter({ userId, chapterId: params.chapterId, courseId: params.courseId });
 
   if (!chapter || !course) return redirect("/");
+
+  // Show only the language the student selected (content is stored bilingually).
+  const chapterTitle = pickContent(chapter.title, lang);
+  const courseTitle = pickContent(course.title, lang);
+  const chapterDescription = chapter.description ? pickContent(chapter.description, lang) : "";
 
   // Get student name for certificate
   const user = await clerkClient.users.getUser(userId).catch(() => null);
@@ -50,7 +57,7 @@ const ChapterIdPage = async ({
       {/* Completion + Certificate banner */}
       <CompletionBanner
         courseId={params.courseId}
-        courseTitle={course.title}
+        courseTitle={courseTitle}
         studentName={studentName}
       />
 
@@ -59,7 +66,7 @@ const ChapterIdPage = async ({
           <div className="p-4">
             <VideoPlayer
               chapterId={params.chapterId}
-              title={chapter.title}
+              title={chapterTitle}
               courseId={params.courseId}
               nextChapterId={nextChapter?.id}
               videoUrl={chapter.videoUrl}
@@ -71,9 +78,9 @@ const ChapterIdPage = async ({
         <div className="px-4 pb-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-y-3 py-4">
             <div>
-              <h2 className="text-xl font-bold">{chapter.title}</h2>
-              {course.title && (
-                <p className="text-sm text-muted-foreground mt-0.5">{course.title}</p>
+              <h2 className="text-xl font-bold">{chapterTitle}</h2>
+              {courseTitle && (
+                <p className="text-sm text-muted-foreground mt-0.5">{courseTitle}</p>
               )}
             </div>
             <CourseProgressButton
@@ -84,9 +91,9 @@ const ChapterIdPage = async ({
             />
           </div>
           <Separator />
-          {chapter.description && (
+          {chapterDescription && (
             <div className="mt-4">
-              <Preview value={chapter.description} />
+              <Preview value={chapterDescription} />
             </div>
           )}
 

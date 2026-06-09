@@ -9,6 +9,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/hooks/use-language";
+import { pickContent, parseContent, composeContent } from "@/lib/content-i18n";
 
 interface TitleFormProps {
   initialData: { title: string };
@@ -26,23 +28,26 @@ interface TitleFormProps {
 
 export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
 
   const formSchema = z.object({
-    title: z.string().min(1, { message: t.course.titleRequired }),
+    titleUz: z.string().min(1, { message: t.course.titleRequired }),
+    titleRu: z.string().min(1, { message: t.course.titleRequired }),
   });
 
+  const parsed = parseContent(initialData.title);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: { titleUz: parsed.uz, titleRu: parsed.ru },
   });
 
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}`, values);
+      const title = composeContent({ uz: values.titleUz, ru: values.titleRu });
+      await axios.patch(`/api/courses/${courseId}`, { title });
       toast.success(t.course.titleUpdated);
       setIsEditing(false);
       router.refresh();
@@ -61,15 +66,33 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
           )}
         </Button>
       </div>
-      {!isEditing && <p className="text-sm mt-2">{initialData.title}</p>}
+      {!isEditing && <p className="text-sm mt-2">{pickContent(initialData.title, lang)}</p>}
       {isEditing && (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
             <FormField
               control={form.control}
-              name="title"
+              name="titleUz"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>O&apos;zbekcha (UZ)</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={isSubmitting}
+                      placeholder={t.course.titlePlaceholder}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="titleRu"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Русский (RU)</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmitting}

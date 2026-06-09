@@ -3,6 +3,7 @@ import CourseSidebarItem from "./course-sidebar-item";
 import { CourseProgress } from "@/components/course-progress";
 import { BookOpen } from "lucide-react";
 import { getT, getLang } from "@/lib/get-lang";
+import { pickContent } from "@/lib/content-i18n";
 
 interface CourseSidebarProps {
   course: Course & {
@@ -28,7 +29,7 @@ const CourseSidebar = async ({ course, progressCount }: CourseSidebarProps) => {
           <div className="h-8 w-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0 mt-0.5">
             <BookOpen className="h-4 w-4 text-violet-600" />
           </div>
-          <h1 className="font-semibold text-sm leading-tight">{course.title}</h1>
+          <h1 className="font-semibold text-sm leading-tight">{pickContent(course.title, lang)}</h1>
         </div>
         <div className="pt-1">
           <CourseProgress
@@ -43,7 +44,7 @@ const CourseSidebar = async ({ course, progressCount }: CourseSidebarProps) => {
           <CourseSidebarItem
             key={chapter.id}
             id={chapter.id}
-            label={chapter.title}
+            label={pickContent(chapter.title, lang)}
             isCompleted={!!chapter.userProgress?.[0]?.isCompleted}
             courseId={course.id}
             isLocked={false}

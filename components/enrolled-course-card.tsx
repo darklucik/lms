@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, CheckCircle2, Trophy } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
+import { pickContent } from "@/lib/content-i18n";
 
 interface EnrolledCourseCardProps {
   id: string;
@@ -22,7 +23,8 @@ export function EnrolledCourseCard({
   progress,
   category,
 }: EnrolledCourseCardProps) {
-  const { t } = useLanguage();
+  const { lang } = useLanguage();
+  const localizedTitle = pickContent(title, lang);
   const isComplete = progress >= 100;
   const rounded = Math.round(progress);
 
@@ -38,7 +40,7 @@ export function EnrolledCourseCard({
 
           {/* Title */}
           <h3 className="text-sm font-semibold leading-tight group-hover:text-violet-700 transition-colors line-clamp-2 mt-0.5">
-            {title}
+            {localizedTitle}
           </h3>
 
           {/* Progress section */}
@@ -86,7 +88,7 @@ export function EnrolledCourseCard({
           {imageUrl ? (
             <Image
               src={imageUrl}
-              alt={title}
+              alt={localizedTitle}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
