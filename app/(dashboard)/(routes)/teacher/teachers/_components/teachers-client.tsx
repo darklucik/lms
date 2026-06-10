@@ -15,7 +15,13 @@ interface Teacher {
   createdAt: Date;
 }
 
-export const TeachersClient = ({ initialTeachers }: { initialTeachers: Teacher[] }) => {
+export const TeachersClient = ({
+  initialTeachers,
+  isSuperAdmin,
+}: {
+  initialTeachers: Teacher[];
+  isSuperAdmin: boolean;
+}) => {
   const router = useRouter();
   const { t, lang } = useLanguage();
   const [teachers, setTeachers] = useState<Teacher[]>(initialTeachers);
@@ -88,9 +94,11 @@ export const TeachersClient = ({ initialTeachers }: { initialTeachers: Teacher[]
             <div key={teacher.id} className="flex items-center gap-x-3 p-3 bg-violet-50 border border-violet-200 rounded-lg">
               <UserCheck className="h-4 w-4 text-violet-600 shrink-0" />
               <code className="text-sm text-violet-700 flex-1">{teacher.userId}</code>
-              <button onClick={() => onDelete(teacher.id)} disabled={deletingId === teacher.id} className="hover:opacity-75 transition text-slate-500">
-                {deletingId === teacher.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
-              </button>
+              {isSuperAdmin && (
+                <button onClick={() => onDelete(teacher.id)} disabled={deletingId === teacher.id} className="hover:opacity-75 transition text-slate-500">
+                  {deletingId === teacher.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
+                </button>
+              )}
             </div>
           ))}
         </div>

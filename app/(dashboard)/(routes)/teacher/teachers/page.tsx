@@ -12,6 +12,8 @@ const TeachersPage = async () => {
   }
   const lang = getLang();
 
+  const isSuperAdmin = userId === process.env.NEXT_PUBLIC_TEACHER_ID;
+
   const teachers = await db.teacher.findMany({ orderBy: { createdAt: "desc" } });
 
   const title = lang === "uz" ? "O'qituvchilarni boshqarish" : "Управление учителями";
@@ -25,7 +27,7 @@ const TeachersPage = async () => {
         <h1 className="text-2xl font-bold">{title}</h1>
         <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
       </div>
-      <TeachersClient initialTeachers={teachers} />
+      <TeachersClient initialTeachers={teachers} isSuperAdmin={isSuperAdmin} />
     </div>
   );
 };
