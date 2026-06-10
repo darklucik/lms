@@ -14,8 +14,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const { userId } = auth();
-  // Только суперадмин (env var) может добавлять учителей
-  if (!userId || userId !== process.env.NEXT_PUBLIC_TEACHER_ID) {
+  // Любой учитель (супер-админ через env var ИЛИ учитель из БД) может добавлять учителей
+  if (!userId || !await isTeacher(userId)) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
   const { teacherUserId } = await req.json();

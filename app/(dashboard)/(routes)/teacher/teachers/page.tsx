@@ -3,10 +3,11 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { TeachersClient } from "./_components/teachers-client";
 import { getLang } from "@/lib/get-lang";
+import { isTeacher } from "@/lib/teacher";
 
 const TeachersPage = async () => {
   const { userId } = auth();
-  if (!userId || userId !== process.env.NEXT_PUBLIC_TEACHER_ID) {
+  if (!await isTeacher(userId)) {
     return redirect("/");
   }
   const lang = getLang();
