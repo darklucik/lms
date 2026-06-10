@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { ToastProvider } from "@/components/providers/toaster-provider";
 import { ConfettiProvider } from "@/components/providers/confetti-provider";
 import { ChunkErrorHandler } from "@/components/providers/chunk-error-handler";
@@ -21,12 +22,14 @@ export default function RootLayout({
   return (
     <html lang="uz">
       <body className={inter.className}>
-        <LanguageProvider>
-          <ChunkErrorHandler />
-          <ConfettiProvider />
-          <ToastProvider />
-          {children}
-        </LanguageProvider>
+        <ClerkProvider>
+          <LanguageProvider>
+            <ChunkErrorHandler />
+            <ConfettiProvider />
+            <ToastProvider />
+            {children}
+          </LanguageProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

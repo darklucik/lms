@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
@@ -58,6 +59,7 @@ const NavbarRoutes = () => {
             </Button>
           </Link>
         ) : null}
+        <UserButton afterSignOutUrl="/" />
       </div>
     </>
   );
