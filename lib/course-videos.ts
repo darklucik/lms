@@ -1,5 +1,5 @@
 /**
- * Curated, real YouTube tutorial videos (Russian-language) mapped to chapter
+ * Curated, real YouTube tutorial videos (Uzbek-language) mapped to chapter
  * topics. Single source of truth shared by the seed scripts and the
  * `scripts/add-chapter-videos.ts` backfill, so every chapter that lacks a video
  * gets a relevant one picked by keyword.
@@ -18,51 +18,68 @@ interface Rule {
 
 // ── Python (and the generic programming fallback) ───────────────────────────
 const PYTHON: Rule[] = [
-  { match: /docker|deployment|развёрт|развертыв|production/i, url: yt("dNS61T4MmlM") },
-  { match: /django/i, url: yt("FZAO72uTj0M") },
-  { match: /flask/i, url: yt("jgAVGtkk03Q") },
-  { match: /fastapi|rest\s*api|rest-api/i, url: yt("RUddtw-oqFU") },
-  { match: /sqlalchemy|postgre|ma'?lumotlar bazas|баз[аы] данных|\bбд\b/i, url: yt("hJsEVtaWOWM") },
-  { match: /asinxron|асинхрон|asyncio/i, url: yt("_4QY1nGFRY8") },
-  { match: /test|тест|pytest|unittest/i, url: yt("cBt7DveuuS0") },
-  { match: /modul|модул|paket|пакет/i, url: yt("bVYvtpMeepU") },
-  { match: /xato|exception|исключен|boshqarish/i, url: yt("KTosYqzyLpU") },
-  { match: /fayl|файл/i, url: yt("tNfJ7EHN_Vw") },
-  { match: /oop|ооп|ob'?ekt|yo'?naltirilgan/i, url: yt("gFRa6qVN980") },
-  { match: /ro'?yxat|lug'?at|to'?plam|списк|словар|множеств|коллекц|кортеж/i, url: yt("qFRIRi3XwWk") },
-  { match: /funksiya|функци/i, url: yt("6K5v4--G__U") },
-  { match: /shart|tsikl|услови|цикл/i, url: yt("P0-jowMUwNk") },
-  { match: /o'?zgaruvchi|переменн|turlar|типы данных/i, url: yt("DZvNZ9l9NT4") },
-  { match: /kalkulyator|калькулятор/i, url: yt("8Ca7oT5RlxU") },
-  { match: /yakuniy|loyiha|финальн|проект|backend/i, url: yt("gBfkX9H3szQ") },
+  // Docker / deployment
+  { match: /docker|deployment|развёрт|развертыв|production/i, url: yt("f6Gwdyu65Tk") },
+  // Django
+  { match: /django/i, url: yt("ldBZVMI43xY") },
+  // Flask
+  { match: /flask/i, url: yt("f6Gwdyu65Tk") },
+  // FastAPI / REST API
+  { match: /fastapi|rest\s*api|rest-api/i, url: yt("f6Gwdyu65Tk") },
+  // SQLAlchemy / PostgreSQL / database
+  { match: /sqlalchemy|postgre|ma'?lumotlar bazas|баз[аы] данных|\bбд\b/i, url: yt("gDJZOTlHhcg") },
+  // asyncio
+  { match: /asinxron|асинхрон|asyncio/i, url: yt("f6Gwdyu65Tk") },
+  // tests / pytest
+  { match: /test|тест|pytest|unittest/i, url: yt("f6Gwdyu65Tk") },
+  // modules / packages
+  { match: /modul|модул|paket|пакет/i, url: yt("VMg3zsh1gCU") },
+  // exceptions / error handling
+  { match: /xato|exception|исключен|boshqarish/i, url: yt("bY9lnhZ5zqs") },
+  // files
+  { match: /fayl|файл/i, url: yt("PXACfvhS9vU") },
+  // OOP / classes
+  { match: /oop|ооп|ob'?ekt|yo'?naltirilgan/i, url: yt("x1V7sXukKE0") },
+  // lists / dicts / collections
+  { match: /ro'?yxat|lug'?at|to'?plam|списк|словар|множеств|коллекц|кортеж/i, url: yt("1XOYa0BlF54") },
+  // functions
+  { match: /funksiya|функци/i, url: yt("pBW9buTi9HM") },
+  // conditions / loops
+  { match: /shart|tsikl|услови|цикл/i, url: yt("RhgjRtIEFnI") },
+  // variables / data types
+  { match: /o'?zgaruvchi|переменн|turlar|типы данных/i, url: yt("P3XqsGJtxBM") },
+  // calculator mini-project
+  { match: /kalkulyator|калькулятор/i, url: yt("A_MGbcYzdcc") },
+  // final project / backend
+  { match: /yakuniy|loyiha|финальн|проект|backend/i, url: yt("ldBZVMI43xY") },
   // Intro / fallback
-  { match: /.*/i, url: yt("34Rp6KVGIEM") },
+  { match: /.*/i, url: yt("fU-3YmGTWyg") },
 ];
 
 // ── JavaScript ──────────────────────────────────────────────────────────────
 const JAVASCRIPT: Rule[] = [
-  { match: /\bdom\b|sahifa|страниц|событи|element/i, url: yt("2DRJ07ykYQs") },
-  { match: /massiv|массив|tsikl|цикл/i, url: yt("H39s52IW3bk") },
-  { match: /o'?zgaruvchi|переменн|let|const/i, url: yt("JPIJ6DlLzK8") },
-  { match: /funksiya|функци|shart|услови/i, url: yt("maPRR_jjyOE") },
-  { match: /.*/i, url: yt("fHl7UyRjOf0") },
+  { match: /\bdom\b|sahifa|страниц|событи|element/i, url: yt("E7_qUYYXazU") },
+  { match: /massiv|массив|tsikl|цикл/i, url: yt("n3og3H5ToAQ") },
+  { match: /o'?zgaruvchi|переменн|let|const/i, url: yt("n3og3H5ToAQ") },
+  { match: /funksiya|функци|shart|услови/i, url: yt("f_w5Zx1yh2M") },
+  { match: /.*/i, url: yt("n3og3H5ToAQ") },
 ];
 
 // ── HTML & CSS ────────────────────────────────────────────────────────────────
 const WEB: Rule[] = [
-  { match: /flexbox|joylash|вёрстк|верстк/i, url: yt("nIMrrrFnFuQ") },
-  { match: /css|stil|стил|shrift|шрифт|rang|цвет/i, url: yt("o8neCiuAfsA") },
-  { match: /teg|теги|rasm|havola|картинк|ссылк|ro'?yxat|список/i, url: yt("MFgwNOILQfQ") },
-  { match: /.*/i, url: yt("_R5a-Kc0pRc") },
+  { match: /flexbox|joylash|вёрстк|верстк/i, url: yt("CD8z2gxpCh4") },
+  { match: /css|stil|стил|shrift|шрифт|rang|цвет/i, url: yt("xwaA2R7vJm8") },
+  { match: /teg|теги|rasm|havola|картинк|ссылк|ro'?yxat|список/i, url: yt("rbdIJkeBkDY") },
+  { match: /.*/i, url: yt("xwaA2R7vJm8") },
 ];
 
 // ── Git & Terminal ────────────────────────────────────────────────────────────
 const GIT: Rule[] = [
-  { match: /github|yuklash|загрузк|push/i, url: yt("VJm_AjiTEEc") },
-  { match: /commit|коммит/i, url: yt("O00FTZDxD0o") },
-  { match: /git/i, url: yt("bkNCylkzFRk") },
-  { match: /terminal|терминал|buyruq|команд/i, url: yt("XvqRTcRK7fU") },
-  { match: /.*/i, url: yt("bkNCylkzFRk") },
+  { match: /github|yuklash|загрузк|push/i, url: yt("vj6wUBcJWU8") },
+  { match: /commit|коммит/i, url: yt("vj6wUBcJWU8") },
+  { match: /git/i, url: yt("vj6wUBcJWU8") },
+  { match: /terminal|терминал|buyruq|команд/i, url: yt("vj6wUBcJWU8") },
+  { match: /.*/i, url: yt("vj6wUBcJWU8") },
 ];
 
 function familyFor(courseTitle: string): Rule[] {
